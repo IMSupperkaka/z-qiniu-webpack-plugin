@@ -1,0 +1,11 @@
+{
+  "name": "z-qiniu-webpack-plugin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/IMSupperkaka/z-qiniu-webpack-plugin.git",
+  "author": "shawn <1072815089@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "qiniu": "^7.3.2"
+  }
+}
