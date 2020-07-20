@@ -5,7 +5,12 @@
   "repository": "https://github.com/IMSupperkaka/z-qiniu-webpack-plugin.git",
   "author": "shawn <1072815089@qq.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
+    "jest": "^26.1.0",
+    "progress": "^2.0.3",
     "qiniu": "^7.3.2"
   }
 }
