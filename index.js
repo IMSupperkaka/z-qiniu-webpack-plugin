@@ -48,15 +48,15 @@ class zQiniuWebpackPlugin {
             fail: 0
         }
         const tickBar = (index) => {
-            queue.splice(index, index);
             const fisrAssest = assetsList[0];
             bar.tick();
+            queue[index].status = 'done';
             if (fisrAssest) {
                 queue.push(fisrAssest);
                 upload(fisrAssest);
                 assetsList.splice(0, 1);
             }
-            if (queue.length <= 0) {
+            if (this.isFinish()) {
                 console.log('z.上传结束');
                 console.log(`上传成功 ${result.success}`);
                 console.log(`上传失败 ${result.fail}`);
@@ -72,6 +72,12 @@ class zQiniuWebpackPlugin {
             });
         }
         queue.map(upload);
+    }
+
+    isFinish(list) {
+        return list.filter((v) => {
+            return v.status !== 'done';
+        }).length == 0;
     }
 
     uploadSingle(qiniuUploader, filepath, filename, retryNum) {
