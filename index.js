@@ -53,10 +53,10 @@ class zQiniuWebpackPlugin {
             queue[index].status = 'done';
             if (fisrAssest) {
                 queue.push(fisrAssest);
-                upload(fisrAssest);
+                upload(fisrAssest, queue.length - 1);
                 assetsList.splice(0, 1);
             }
-            if (this.isFinish()) {
+            if (this.isFinish(queue)) {
                 console.log('z.上传结束');
                 console.log(`上传成功 ${result.success}`);
                 console.log(`上传失败 ${result.fail}`);
@@ -71,7 +71,9 @@ class zQiniuWebpackPlugin {
                 tickBar(index);
             });
         }
-        queue.map(upload);
+        queue.map((v, index) => {
+            upload(v, index);
+        });
     }
 
     isFinish(list) {
