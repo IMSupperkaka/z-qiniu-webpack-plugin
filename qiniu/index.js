@@ -23,7 +23,7 @@ class Qiniu {
                         reject(respBody);
                     }
                 } else {
-                    reject(err);
+                    reject(respErr);
                 }
             });
         })
