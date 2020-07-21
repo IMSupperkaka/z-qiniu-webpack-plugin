@@ -11,6 +11,8 @@
   "dependencies": {
     "jest": "^26.1.0",
     "progress": "^2.0.3",
-    "qiniu": "^7.3.2"
+    "qiniu": "^7.3.2",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }
