@@ -3,7 +3,8 @@ const qiniu = require('./qiniu');
 
 const defaultOption = {
     maxConcurrent: 10, // 最大并发上传数量
-    retryNum: 0 // 失败重新上传次数 
+    retryNum: 0, // 失败重新上传次数
+    uploadPath: 'z_webpack_asstes' 
 }
 
 class zQiniuWebpackPlugin {
