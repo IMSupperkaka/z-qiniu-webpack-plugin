@@ -10,9 +10,9 @@ module.exports = {
     plugins: [
         new ZQiniuWebpackPlugin({
             maxConcurrent: 1,
-            accessKey: '0zn3jrk5z_zEVz-8rhAItN4NhA0kxaVvXKzhizxL',
-            secretKey: 'Qn1ruQaPNwwaXMDBTSyhSYUcWeTywmTn8f4SNmcn',
-            bucket: 'guozhongbao'
+            accessKey: '',
+            secretKey: '',
+            bucket: ''
         })
     ]
 };
