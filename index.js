@@ -29,6 +29,7 @@ class zQiniuWebpackPlugin {
                     filepath: assets[filename].existsAt
                 });
             }
+            console.log(assetsList);
             this.uploadQueue(assetsList);
         })
     }
