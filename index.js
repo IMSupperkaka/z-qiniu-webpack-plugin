@@ -1,5 +1,6 @@
 const ProgressBar = require('progress');
 const qiniu = require('./qiniu');
+const limitMap = require('./utils/limit-map');
 
 const defaultOption = {
     maxConcurrent: 10, // 最大并发上传数量
@@ -43,38 +44,53 @@ class zQiniuWebpackPlugin {
             incomplete: ' ',
             width: 20
         });
-        const queue = assetsList.splice(0, this.option.maxConcurrent);
+        // const queue = assetsList.splice(0, this.option.maxConcurrent);
         const result = {
             success: 0,
             fail: 0
         }
-        const tickBar = (index) => {
-            const fisrAssest = assetsList[0];
-            bar.tick();
-            queue[index].status = 'done';
-            if (fisrAssest) {
-                queue.push(fisrAssest);
-                upload(fisrAssest, queue.length - 1);
-                assetsList.splice(0, 1);
-            }
-            if (this.isFinish(queue)) {
-                console.log('z.上传结束');
-                console.log(`上传成功 ${result.success}`);
-                console.log(`上传失败 ${result.fail}`);
-            }
-        }
-        const upload = ({ filename, filepath }, index) => {
+        limitMap(assetsList, this.option.maxConcurrent, ({ filepath, filename }, callback) => {
             this.uploadSingle(qiniuUploader, filepath, filename, this.option.retryNum).then(() => {
                 result.success++;
-                tickBar(index);
+                callback();
+                bar.tick();
             }).catch(() => {
                 result.fail++;
-                tickBar(index);
+                callback();
+                bar.tick();
             });
-        }
-        queue.map((v, index) => {
-            upload(v, index);
+        }, (list) => {
+            console.log('z.上传结束');
+            console.log(`上传成功 ${result.success}`);
+            console.log(`上传失败 ${result.fail}`);
         });
+        // const tickBar = (index) => {
+        //     const fisrAssest = assetsList[0];
+        //     bar.tick();
+        //     queue[index].status = 'done';
+        //     if (fisrAssest) {
+        //         queue.push(fisrAssest);
+        //         upload(fisrAssest, queue.length - 1);
+        //         assetsList.splice(0, 1);
+        //     }
+        //     if (this.isFinish(queue)) {
+        //         console.log('z.上传结束');
+        //         console.log(`上传成功 ${result.success}`);
+        //         console.log(`上传失败 ${result.fail}`);
+        //     }
+        // }
+        // const upload = ({ filename, filepath }, index, callback) => {
+        //     this.uploadSingle(qiniuUploader, filepath, filename, this.option.retryNum).then(() => {
+        //         result.success++;
+        //         tickBar(index);
+        //     }).catch(() => {
+        //         result.fail++;
+        //         tickBar(index);
+        //     });
+        // }
+        // queue.map((v, index) => {
+        //     upload(v, index);
+        // });
     }
 
     isFinish(list) {
