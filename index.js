@@ -1,17 +1,21 @@
 const ProgressBar = require('progress');
 const path = require('path');
+const url = require('url');
 const qiniu = require('./qiniu');
 const limitMap = require('./utils/limit-map');
 
 const defaultOption = {
     maxConcurrent: 10, // 最大并发上传数量
     retryNum: 0, // 失败重新上传次数
-    uploadPath: 'z_webpack_asstes' 
+    uploadPath: 'z_webpack_asstes',
+    bucketDomain: '',
+    usePublicPath: true,
+    useDev: false
 }
 
 class zQiniuWebpackPlugin {
 
-    constructor (option = {}) {
+    constructor(option = {}) {
         this.option = {
             ...defaultOption,
             ...option
@@ -19,11 +23,21 @@ class zQiniuWebpackPlugin {
     }
 
     apply(compiler) {
+        if (process.env.NODE_ENV && process.env.NODE_ENV == 'development') {
+            return;
+        }
+        compiler.hooks.beforeRun.tapAsync('ZQiniuWebpackPlugin:beforeRun', (compiler, callback) => {
+            const { usePublicPath, bucketDomain, uploadPath } = this.option;
+            if (usePublicPath) {
+                compiler.options.output.publicPath = url.resolve(bucketDomain, uploadPath);
+            }
+            callback();
+        });
         // 注册afterEmit钩子函数 在完成输出资源至output目录后调用此函数
         compiler.hooks.afterEmit.tap('ZQiniuWebpackPlugin:afterEmit', (compilation) => {
             const { assets } = compilation;
             const assetsList = [];
-            for ( let filename in assets) {
+            for (let filename in assets) {
                 assetsList.push({
                     filename: path.join(this.option.uploadPath, filename),
                     filepath: assets[filename].existsAt
@@ -74,8 +88,8 @@ class zQiniuWebpackPlugin {
                     reject(e);
                 } else {
                     this.uploadSingle(qiniuUploader, filepath, filename, --retryNum)
-                    .then(resolve)
-                    .catch(reject);
+                        .then(resolve)
+                        .catch(reject);
                 }
             })
         })

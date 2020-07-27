@@ -1,6 +1,6 @@
 {
   "name": "z-qiniu-webpack-plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "index.js",
   "repository": "https://github.com/IMSupperkaka/z-qiniu-webpack-plugin.git",
   "author": "shawn <1072815089@qq.com>",
@@ -13,6 +13,7 @@
     "jest": "^26.1.0",
     "progress": "^2.0.3",
     "qiniu": "^7.3.2",
+    "url": "^0.11.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
   }
