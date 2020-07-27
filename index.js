@@ -1,4 +1,5 @@
 const ProgressBar = require('progress');
+const path = require('path');
 const qiniu = require('./qiniu');
 const limitMap = require('./utils/limit-map');
 
@@ -24,7 +25,7 @@ class zQiniuWebpackPlugin {
             const assetsList = [];
             for ( let filename in assets) {
                 assetsList.push({
-                    filename: filename,
+                    filename: path.join(this.option.uploadPath, filename),
                     filepath: assets[filename].existsAt
                 });
             }
@@ -44,66 +45,32 @@ class zQiniuWebpackPlugin {
             incomplete: ' ',
             width: 20
         });
-        // const queue = assetsList.splice(0, this.option.maxConcurrent);
         const result = {
             success: 0,
             fail: 0
         }
         limitMap(assetsList, this.option.maxConcurrent, ({ filepath, filename }, callback) => {
-            this.uploadSingle(qiniuUploader, filepath, filename, this.option.retryNum).then(() => {
+            this.uploadSingle(qiniuUploader, filepath, filename, this.option.retryNum).then((res) => {
                 result.success++;
-                callback();
                 bar.tick();
+                callback();
             }).catch(() => {
                 result.fail++;
-                callback();
                 bar.tick();
+                callback();
             });
         }, (list) => {
             console.log('z.上传结束');
             console.log(`上传成功 ${result.success}`);
             console.log(`上传失败 ${result.fail}`);
         });
-        // const tickBar = (index) => {
-        //     const fisrAssest = assetsList[0];
-        //     bar.tick();
-        //     queue[index].status = 'done';
-        //     if (fisrAssest) {
-        //         queue.push(fisrAssest);
-        //         upload(fisrAssest, queue.length - 1);
-        //         assetsList.splice(0, 1);
-        //     }
-        //     if (this.isFinish(queue)) {
-        //         console.log('z.上传结束');
-        //         console.log(`上传成功 ${result.success}`);
-        //         console.log(`上传失败 ${result.fail}`);
-        //     }
-        // }
-        // const upload = ({ filename, filepath }, index, callback) => {
-        //     this.uploadSingle(qiniuUploader, filepath, filename, this.option.retryNum).then(() => {
-        //         result.success++;
-        //         tickBar(index);
-        //     }).catch(() => {
-        //         result.fail++;
-        //         tickBar(index);
-        //     });
-        // }
-        // queue.map((v, index) => {
-        //     upload(v, index);
-        // });
-    }
-
-    isFinish(list) {
-        return list.filter((v) => {
-            return v.status !== 'done';
-        }).length == 0;
     }
 
     uploadSingle(qiniuUploader, filepath, filename, retryNum) {
         return new Promise((resolve, reject) => {
-            qiniuUploader.upload(filepath, filename).then(resolve).catch(() => {
+            qiniuUploader.upload(filepath, filename).then(resolve).catch((e) => {
                 if (retryNum <= 0) {
-                    resolve();
+                    reject(e);
                 } else {
                     this.uploadSingle(qiniuUploader, filepath, filename, --retryNum)
                     .then(resolve)

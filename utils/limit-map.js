@@ -1,9 +1,9 @@
 
 const limitMap = (list, limit, iterator, callback) => {
     const cloneList = [...list];
-    const queue = cloneList.split(0, limit);
-    let complete = 0;
     let length = cloneList.length;
+    const queue = cloneList.splice(0, limit);
+    let complete = 0;
 
     const iteratorCallback = () => {
         complete++;
@@ -11,7 +11,7 @@ const limitMap = (list, limit, iterator, callback) => {
             return callback(queue);
         }
         if (cloneList.length > 0) {
-            const firstItem = cloneList.split(0, 1);
+            const [firstItem] = cloneList.splice(0, 1);
             queue.push(firstItem);
             iterator(firstItem, iteratorCallback);
         }
@@ -22,4 +22,4 @@ const limitMap = (list, limit, iterator, callback) => {
     });
 }
 
-export default limitMap;
+module.exports = limitMap;
